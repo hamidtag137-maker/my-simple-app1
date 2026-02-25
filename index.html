@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مترجم فارسی - عربی</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* استایل کلی */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 750px;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin: 10px;
+        }
+        
+        /* هدر */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        header h1 {
+            color: #2c3e50;
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        
+        header p {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        /* وضعیت اتصال */
+        .connection-status {
+            padding: 8px 12px;
+            margin: 10px 0 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            display: none;
+        }
+        
+        .online {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .offline {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* محل نوشتن متن */
+        .input-section, .output-section {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #34495e;
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        label i {
+            margin-left: 6px;
+            color: #3498db;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            resize: vertical;
+            transition: border 0.3s;
+            line-height: 1.5;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        #sourceText {
+            background-color: #f9f9f9;
+        }
+        
+        #translatedText {
+            background-color: #f0f8ff;
+            border-color: #a8d8ff;
+        }
+        
+        .char-count {
+            text-align: left;
+            margin-top: 6px;
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+        
+        /* بخش دکمه‌های تبدیل */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .translate-btn {
+            flex: 1;
+            margin: 0 6px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 140px;
+        }
+        
+        .left-btn {
+            background: linear-gradient(to left, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .right-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        .translate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .left-btn:hover {
+            background: linear-gradient(to left, #c0392b, #a93226);
+        }
+        
+        .right-btn:hover {
+            background: linear-gradient(to right, #27ae60, #219653);
+        }
+        
+        .translate-btn i {
+            margin: 0 6px;
+            font-size: 16px;
+        }
+        
+        .lang-code {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-right: 4px;
+        }
+        
+        /* علامت تبدیل دوطرفه */
+        .swap-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .swap-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .swap-btn:hover {
+            transform: rotate(180deg) scale(1.05);
+            background: linear-gradient(135deg, #2980b9, #1c5d87);
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+        
+        .swap-label {
+            color: #3498db;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        
+        /* محل نمایش ترجمه */
+        .translation-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .lang-display {
+            background-color: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+        
+        .lang-display i {
+            margin: 0 8px;
+            color: #3498db;
+        }
+        
+        #sourceLang, #targetLang {
+            font-weight: 700;
+            color: #e74c3c;
+        }
+        
+        .mode-indicator {
+            background-color: #e8f4fc;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #2980b9;
+            font-weight: 600;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 7px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .action-btn i {
+            margin-left: 5px;
+        }
+        
+        .action-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        #clearBtn {
+            background-color: #e74c3c;
+        }
+        
+        #clearBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* دکمه‌های صوتی برای ترجمه */
+        .audio-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #9b59b6;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .audio-btn:hover {
+            background-color: #8e44ad;
+            transform: scale(1.05);
+        }
+        
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .audio-btn i {
+            font-size: 14px;
+        }
+        
+        .play-btn {
+            background-color: #2ecc71;
+        }
+        
+        .play-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .pause-btn {
+            background-color: #f39c12;
+            display: none;
+        }
+        
+        .pause-btn:hover {
+            background-color: #d68910;
+        }
+        
+        .stop-btn {
+            background-color: #e74c3c;
+            display: none;
+        }
+        
+        .stop-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* تنظیمات صدا (در پایین) */
+        .voice-settings {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .voice-settings h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .voice-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .voice-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .voice-option:hover {
+            background-color: #e9ecef;
+        }
+        
+        .voice-option.selected {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .voice-option i {
+            font-size: 16px;
+        }
+        
+        .voice-sliders {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .slider-group label {
+            font-size: 13px;
+            margin: 0;
+            min-width: 60px;
+        }
+        
+        input[type="range"] {
+            width: 120px;
+        }
+        
+        .slider-value {
+            min-width: 35px;
+            text-align: center;
+            font-weight: bold;
+            color: #9b59b6;
+            font-size: 13px;
+        }
+        
+        /* انیمیشن پخش */
+        .playing {
+            animation: pulse 1.5s infinite;
+            position: relative;
+        }
+        
+        .playing::after {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 9px;
+            border: 2px solid #2ecc71;
+            animation: pulse-border 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+        
+        @keyframes pulse-border {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.1); opacity: 0; }
+        }
+        
+        /* آدیو پلیر */
+        .audio-player {
+            margin-top: 10px;
+            display: none;
+        }
+        
+        audio {
+            width: 100%;
+            border-radius: 8px;
+        }
+        
+        /* فوتر */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+        
+        /* رسپانسیو */
+        @media (max-width: 700px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .translate-btn {
+                width: 100%;
+                margin: 3px 0;
+            }
+            
+            .swap-container {
+                order: -1;
+                margin-bottom: 5px;
+            }
+            
+            .translation-info {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .actions {
+                justify-content: center;
+            }
+            
+            .voice-options {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .voice-sliders {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            input[type="range"] {
+                width: 100px;
+            }
+            
+            header h1 {
+                font-size: 20px;
+            }
+            
+            textarea {
+                height: 90px;
+                font-size: 15px;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px 12px;
+            }
+            
+            .translate-btn {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            
+            .swap-btn {
+                width: 45px;
+                height: 45px;
+            }
+            
+            textarea {
+                height: 85px;
+                padding: 10px;
+            }
+            
+            .audio-btn {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-language"></i> مترجم فارسی - عربی</h1>
+            <p>متن خود را وارد کرده و ترجمه کنید</p>
+        </header>
+
+        <!-- وضعیت اتصال -->
+        <div id="connectionStatus" class="connection-status">
+            <i class="fas fa-wifi"></i> <span id="statusText">در حال بررسی اتصال...</span>
+        </div>
+
+        <!-- محل نوشتن متن -->
+        <div class="input-section">
+            <label for="sourceText"><i class="fas fa-pen"></i> متن ورودی:</label>
+            <textarea id="sourceText" placeholder="متن خود را اینجا بنویسید..."></textarea>
+            <div class="char-count">تعداد کاراکتر: <span id="charCount">0</span> (حداکثر ۱۰۰۰ کاراکتر)</div>
+        </div>
+
+        <!-- بخش دکمه‌های تبدیل -->
+        <div class="controls">
+            <!-- تبدیل به عربی -->
+            <button id="toArabic" class="translate-btn left-btn">
+                <i class="fas fa-arrow-left"></i>
+                به عربی
+                <span class="lang-code">(ar)</span>
+            </button>
+            
+            <!-- علامت تبدیل دوطرفه -->
+            <div class="swap-container">
+                <button id="swapLangs" class="swap-btn">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+                <div class="swap-label">تبدیل</div>
+            </div>
+            
+            <!-- تبدیل به فارسی -->
+            <button id="toPersian" class="translate-btn right-btn">
+                به فارسی
+                <span class="lang-code">(fa)</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- محل نمایش ترجمه -->
+        <div class="output-section">
+            <label for="translatedText"><i class="fas fa-text-height"></i> متن ترجمه شده:</label>
+            <textarea id="translatedText" readonly placeholder="ترجمه متن در اینجا نمایش داده می‌شود..."></textarea>
+            
+            <!-- کنترل‌های صوتی برای متن ترجمه شده -->
+            <div class="audio-controls">
+                <button id="playTranslated" class="audio-btn play-btn">
+                    <i class="fas fa-play"></i> پخش ترجمه
+                </button>
+                <button id="pauseTranslated" class="audio-btn pause-btn">
+                    <i class="fas fa-pause"></i> مکث
+                </button>
+                <button id="stopTranslated" class="audio-btn stop-btn">
+                    <i class="fas fa-stop"></i> توقف
+                </button>
+            </div>
+            
+            <!-- پلیر صوتی -->
+            <div class="audio-player" id="translatedAudioPlayer">
+                <audio id="translatedAudio" controls></audio>
+            </div>
+            
+            <div class="translation-info">
+                <div class="lang-display">
+                    <span id="sourceLang">فارسی</span>
+                    <i class="fas fa-long-arrow-alt-down"></i>
+                    <span id="targetLang">عربی</span>
+                </div>
+                <div class="mode-indicator">
+                    حالت: <span id="translationMode">در حال بررسی</span>
+                </div>
+                <div class="actions">
+                    <button id="copyBtn" class="action-btn">
+                        <i class="far fa-copy"></i> کپی
+                    </button>
+                    <button id="clearBtn" class="action-btn">
+                        <i class="far fa-trash-alt"></i> پاک‌سازی
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- تنظیمات صدا (در پایین) -->
+        <div class="voice-settings">
+            <h4><i class="fas fa-volume-up"></i> تنظیمات صدا</h4>
+            
+            <div class="voice-options">
+                <div class="voice-option selected" data-voice="google_female">
+                    <i class="fas fa-female"></i>
+                    <span>صدای زن</span>
+                </div>
+                <div class="voice-option" data-voice="google_male">
+                    <i class="fas fa-male"></i>
+                    <span>صدای مرد</span>
+                </div>
+            </div>
+            
+            <div class="voice-sliders">
+                <div class="slider-group">
+                    <label>سرعت:</label>
+                    <input type="range" id="rateControl" min="0.5" max="1.5" step="0.1" value="1">
+                    <span class="slider-value" id="rateValue">1.0</span>
+                </div>
+                <div class="slider-group">
+                    <label>بلندی:</label>
+                    <input type="range" id="volumeControl" min="0.1" max="1" step="0.1" value="1">
+                    <span class="slider-value" id="volumeValue">1.0</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p id="footerText">در حال راه‌اندازی مترجم...</p>
+        </footer>
+    </div>
+
+    <script>
+    // =================== کد کامل مترجم ===================
+    
+    // المنت‌های DOM
+    let sourceText, translatedText, toArabicBtn, toPersianBtn, swapLangsBtn;
+    let copyBtn, clearBtn, charCount, sourceLangElem, targetLangElem;
+    let connectionStatus, statusText, translationMode, footerText;
+    
+    // المنت‌های صوتی
+    let playTranslatedBtn, pauseTranslatedBtn, stopTranslatedBtn;
+    let rateControl, volumeControl, rateValue, volumeValue;
+    let voiceOptions, translatedAudio, translatedAudioPlayer;
+
+    // تنظیمات اولیه
+    let currentSourceLang = 'fa';
+    let currentTargetLang = 'ar';
+    let isOnline = false;
+    let isTranslating = false;
+    
+    // تنظیمات صدا
+    let speechRate = 1.0;
+    let speechVolume = 1.0;
+    let selectedVoice = 'google_female'; // 'google_female' یا 'google_male'
+    let isPlaying = false;
+    let currentAudio = null;
+
+    // =================== دیکشنری آفلاین ===================
+    const offlineDictionary = {
+        // فارسی به عربی
+        'سلام': 'مرحبا',
+        'صبح بخیر': 'صباح الخیر',
+        'سلام علیکم': 'السلام علیکم',
+        'خداحافظ': 'مع السلامة',
+        'متشکرم': 'شكرا',
+        'سپاس': 'شكرا',
+        'ممنون': 'شكرا',
+        'لطفا': 'من فضلك',
+        'بله': 'نعم',
+        'آری': 'نعم',
+        'خیر': 'لا',
+        'نه': 'لا',
+        'خوب': 'جيد',
+        'عالی': 'ممتاز',
+        'خیلی خوب': 'جيد جدا',
+        'بد': 'سيء',
+        'بدترین': 'الأسوأ',
+        'ایران': 'إيران',
+        'عراق': 'العراق',
+        'دوست': 'صديق',
+        'دوستی': 'صداقة',
+        'خانواده': 'عائلة',
+        'پدر': 'أب',
+        'مادر': 'أم',
+        'پدر و مادر': 'الوالدان',
+        'برادر': 'أخ',
+        'خواهر': 'أخت',
+        'کتاب': 'كتاب',
+        'کتاب‌ها': 'كتب',
+        'خانه': 'بيت',
+        'منزل': 'منزل',
+        'مدرسه': 'مدرسة',
+        'دانشگاه': 'جامعة',
+        'کار': 'عمل',
+        'شغل': 'وظيفة',
+        'آب': 'مای',
+        'نان': 'خبز',
+        'غذا': 'طعام',
+        'صبحانه': 'فطور',
+        'ناهار': 'غداء',
+        'شام': 'عشاء',
+        'چای': 'شاي',
+        'قهوه': 'قهوة',
+        'شیر': 'حليب',
+        'میوه': 'فاكهة',
+        'سیب': 'تفاح',
+        'پرتقال': 'برتقال',
+        'موز': 'موز',
+        'گوشت': 'لحم',
+        'مرغ': 'دجاج',
+        'ماهی': 'سمك',
+        'سبزی': 'خضار',
+        'برنج': 'أرز',
+        'روز': 'يوم',
+        'امروز': 'اليوم',
+        'فردا': 'غداً',
+        'دیروز': 'أمس',
+        'هفته': 'أسبوع',
+        'ماه': 'شهر',
+        'سال': 'سنة',
+        'بهار': 'ربيع',
+        'تابستان': 'صيف',
+        'پاییز': 'خريف',
+        'زمستان': 'شتاء',
+        'آفتاب': 'شمس',
+        'ماه': 'قمر',
+        'ستاره': 'نجم',
+        'آسمان': 'سماء',
+        'زمین': 'أرض',
+        'دریا': 'بحر',
+        'رود': 'نهر',
+        'کوه': 'جبل',
+        'جنگل': 'غابة',
+        'شهر': 'مدينة',
+        'روستا': 'قرية',
+        'خیابان': 'شارع',
+        'ماشین': 'سيارة',
+        'اتوبوس': 'باص',
+        'هواپیما': 'طائرة',
+        'قطار': 'قطار',
+        'موتور': 'دراجة',
+        'پول': 'نقود',
+        'پول نقد': 'نقداً',
+        'قیمت': 'سعر',
+        'گران': 'غالٍ',
+        'ارزان': 'رخيص',
+        'بازار': 'سوق',
+        'فروشگاه': 'متجر',
+        'بیمارستان': 'مستشفى',
+        'دکتر': 'طبيب',
+        'پرستار': 'ممرضة',
+        'دارو': 'دواء',
+        'سلامتی': 'صحة',
+        'بیماری': 'مرض',
+        'خنده': 'ضحك',
+        'گریه': 'بكاء',
+        'عشق': 'حب',
+        'محبت': 'مودة',
+        'خوشحال': 'سعيد',
+        'ناراحت': 'حزين',
+        'خسته': 'تعبان',
+        'خواب': 'نوم',
+        'راحت': 'مريح',
+        'سریع': 'سريع',
+        'آهسته': 'بطيء',
+        'بزرگ': 'كبير',
+        'کوچک': 'صغير',
+        'بلند': 'طويل',
+        'کوتاه': 'قصير',
+        'زیبا': 'جميل',
+        'زشت': 'قبيح',
+        'جدید': 'جديد',
+        'قدیمی': 'قديم',
+        'سخت': 'صعب',
+        'آسان': 'سهل',
+        'سرد': 'بارد',
+        'گرم': 'حار',
+        'سبک': 'خفيف',
+        'سنگین': 'ثقيل',
+        'پاک': 'نظيف',
+        'کثیف': 'وسخ',
+        'ثروتمند': 'غني',
+        'فقیر': 'فقير',
+        'آزاد': 'حر',
+        'مجبور': 'مجبر',
+        'مهم': 'مهم',
+        'بی‌اهمیت': 'غير مهم',
+        'اول': 'أول',
+        'آخر': 'آخر',
+        'همیشه': 'دائماً',
+        'هرگز': 'أبداً',
+        'گاهی': 'أحياناً',
+        'اکثر': 'أغلب',
+        'کم': 'قليل',
+        'زیاد': 'كثير',
+        'همه': 'كل',
+        'هیچ': 'لا شيء',
+        'بعضی': 'بعض',
+        'دیگر': 'آخر',
+        'مشهور': 'مشهور',
+        'ناشناس': 'مجهول',
+        'شما': 'أنت',
+        'من': 'أنا',
+        'او': 'هو',
+        'ما': 'نحن',
+        'آنها': 'هم',
+        'این': 'هذا',
+        'آن': 'ذلك',
+        'اینجا': 'هنا',
+        'آنجا': 'هناك',
+        'چرا': 'لماذا',
+        'کی': 'متى',
+        'کجا': 'أين',
+        'چگونه': 'كيف',
+        'چه': 'ماذا',
+        'چند': 'كم',
+        'کدام': 'أي',
+        'چه کسی': 'من',
+        'می‌روم': 'أذهب',
+        'می‌آیم': 'أجيء',
+        'می‌خواهم': 'أريد',
+        'می‌گویم': 'أقول',
+        'می‌کنم': 'أفعل',
+        'می‌خورم': 'آكل',
+        'می‌نویسم': 'أكتب',
+        'می‌خوانم': 'أقرأ',
+        'می‌فهمم': 'أفهم',
+        'می‌دانم': 'أعرف',
+        'می‌بینم': 'أرى',
+        'می‌شنوم': 'أسمع',
+        'می‌خوابم': 'أنام',
+        'می‌خرم': 'أشتري',
+        'می‌فروشم': 'أبيع',
+        'کار می‌کنم': 'أعمل',
+        'تلاش می‌کنم': 'أحاول',
+        'فکر می‌کنم': 'أفكر',
+        'انتظار می‌کشم': 'أنتظر',
+        'ساختم': 'بنيت',
+        'گفتم': 'قلت',
+        'رفتم': 'ذهبت',
+        'آمدم': 'جئت',
+        'می‌روی': 'تذهب',
+        'می‌آیی': 'تجيء',
+        'می‌خواهی': 'تريد',
+        'می‌گویی': 'تقول',
+        'می‌کنی': 'تفعل',
+        'می‌خوری': 'تأكل',
+        'می‌نویسی': 'تكتب',
+        'می‌خوانی': 'تقرأ',
+        'می‌فهمی': 'تفهم',
+        'می‌دانی': 'تعرف',
+        'می‌بینی': 'ترى',
+        'می‌شنوی': 'تسمع',
+        'می‌خوابی': 'تنام',
+        'می‌خری': 'تشتري',
+        'می‌فروشی': 'تبيع',
+        'کار می‌کنی': 'تعمل',
+        'تلاش می‌کنی': 'تحاول',
+        'فکر می‌کنی': 'تفكر',
+        'انتظار می‌کشی': 'تنتظر',
+        'برو': 'اذهب',
+        'بیا': 'تعال',
+        'بگیر': 'خذ',
+        'بده': 'أعطِ',
+        'بگو': 'قل',
+        'بکن': 'افعل',
+        'بنویس': 'اكتب',
+        'بخوان': 'اقرأ',
+        'بشنو': 'اسمع',
+        'ببین': 'انظر',
+        'کار کن': 'اعمل',
+        'صبر کن': 'اصبر',
+        'کمک کن': 'ساعد',
+        'بیا اینجا': 'تعال إلى هنا',
+        'برو آنجا': 'اذهب إلى هناك',
+        'پرداخت می‌کنم': 'أدفع',
+        'دریافت می‌کنم': 'أتلقى',
+        'محاسبه می‌کنم': 'أحسب',
+        'کنترل می‌کنم': 'أتحقق',
+        'نصب می‌کنم': 'أركب',
+        'تعمیر می‌کنم': 'أصلح',
+        'تنظیم می‌کنم': 'أضبط',
+        'تست می‌کنم': 'أختبر',
+        'سلام کردن': 'يسلم',
+        'خداحافظی کردن': 'يودع',
+        'سوال کردن': 'يسأل',
+        'جواب دادن': 'يجيب',
+        'تشکر کردن': 'يشكر',
+        'معذرت خواستن': 'يعتذر',
+        'پرسیدن': 'يستفسر',
+        'گفتن': 'يقول',
+        'شنیدن': 'يسمع',
+        'دیدن': 'يرى',
+        'خریدن': 'يشتري',
+        'فروختن': 'يبيع',
+        'خوردن': 'ياكل',
+        'نوشیدن': 'يشرب',
+        'خوابیدن': 'ينام',
+        'بیدار شدن': 'يستيقظ',
+        'راه رفتن': 'يمشي',
+        'نشستن': 'يجلس',
+        'ایستادن': 'يقف',
+        'آوردن': 'يجلب',
+        'بردن': 'يأخذ',
+        'چطوری؟': 'كيف حالك؟',
+        'خوبم': 'بخير',
+        'بد نیستم': 'لست بخير',
+        'خواهش می‌کنم': 'عفواً',
+        'ببخشید': 'عفواً',
+        'می‌فهممت': 'أفهمك',
+        'نمی‌فهمم': 'لا أفهم',
+        'کمک می‌خواهم': 'أحتاج مساعدة',
+        'نیاز دارم': 'أحتاج',
+        'می‌توانم': 'أستطيع',
+        'نمی‌توانم': 'لا أستطيع',
+        'عجله دارم': 'مستعجل',
+        'بیا برویم': 'هيا بنا نذهب',
+        'کجاست؟': 'أين هو؟',
+        'این چیست؟': 'ما هذا؟',
+        'چقدر؟': 'بكم؟',
+        'حتماً': 'بالتأكيد',
+        'الان': 'الآن',
+        'بعداً': 'لاحقاً',
+        'با من': 'معي',
+        'با تو': 'معك',
+        'برای من': 'لي',
+        'برای تو': 'لك',
+        'از من': 'مني',
+        'از تو': 'منك',
+        'در من': 'في',
+        'در تو': 'فيك',
+        'به من': 'علي',
+        'به تو': 'عليك',
+        'از این': 'من هذا',
+        'از آن': 'من ذلك',
+        'با این': 'مع هذا',
+        'با آن': 'مع ذلك',
+        'برای این': 'لهذا',
+        'برای آن': 'لذلك',
+
+        // عربی به فارسی (برعکس)
+        'مرحبا': 'سلام',
+        'صباح الخیر': 'صبح بخیر',
+        'السلام علیکم': 'سلام علیکم',
+        'مع السلامة': 'خداحافظ',
+        'شكرا': 'متشکرم',
+        'من فضلك': 'لطفا',
+        'نعم': 'بله',
+        'لا': 'خیر',
+        'جيد': 'خوب',
+        'ممتاز': 'عالی',
+        'جيد جدا': 'خیلی خوب',
+        'سيء': 'بد',
+        'الأسوأ': 'بدترین',
+        'إيران': 'ایران',
+        'العراق': 'عراق',
+        'صديق': 'دوست',
+        'صداقة': 'دوستی',
+        'عائلة': 'خانواده',
+        'أب': 'پدر',
+        'أم': 'مادر',
+        'الوالدان': 'پدر و مادر',
+        'أخ': 'برادر',
+        'أخت': 'خواهر',
+        'كتاب': 'کتاب',
+        'كتب': 'کتاب‌ها',
+        'بيت': 'خانه',
+        'منزل': 'منزل',
+        'مدرسة': 'مدرسه',
+        'جامعة': 'دانشگاه',
+        'عمل': 'کار',
+        'وظيفة': 'شغل',
+        'مای': 'آب',
+        'خبز': 'نان',
+        'طعام': 'غذا',
+        'فطور': 'صبحانه',
+        'غداء': 'ناهار',
+        'عشاء': 'شام',
+        'شاي': 'چای',
+        'قهوة': 'قهوه',
+        'حليب': 'شیر',
+        'فاكهة': 'میوه',
+        'تفاح': 'سیب',
+        'برتقال': 'پرتقال',
+        'موز': 'موز',
+        'لحم': 'گوشت',
+        'دجاج': 'مرغ',
+        'سمك': 'ماهی',
+        'خضار': 'سبزی',
+        'أرز': 'برنج',
+        'يوم': 'روز',
+        'اليوم': 'امروز',
+        'غداً': 'فردا',
+        'أمس': 'دیروز',
+        'أسبوع': 'هفته',
+        'شهر': 'ماه',
+        'سنة': 'سال',
+        'ربيع': 'بهار',
+        'صيف': 'تابستان',
+        'خريف': 'پاییز',
+        'شتاء': 'زمستان',
+        'شمس': 'آفتاب',
+        'قمر': 'ماه',
+        'نجم': 'ستاره',
+        'سماء': 'آسمان',
+        'أرض': 'زمین',
+        'بحر': 'دریا',
+        'نهر': 'رود',
+        'جبل': 'کوه',
+        'غابة': 'جنگل',
+        'مدينة': 'شهر',
+        'قرية': 'روستا',
+        'شارع': 'خیابان',
+        'سيارة': 'ماشین',
+        'باص': 'اتوبوس',
+        'طائرة': 'هواپیما',
+        'قطار': 'قطار',
+        'دراجة': 'موتور',
+        'نقود': 'پول',
+        'نقداً': 'پول نقد',
+        'سعر': 'قیمت',
+        'غالٍ': 'گران',
+        'رخيص': 'ارزان',
+        'سوق': 'بازار',
+        'متجر': 'فروشگاه',
+        'مستشفى': 'بیمارستان',
+        'طبيب': 'دکتر',
+        'ممرضة': 'پرستار',
+        'دواء': 'دارو',
+        'صحة': 'سلامتی',
+        'مرض': 'بیماری',
+        'ضحك': 'خنده',
+        'بكاء': 'گریه',
+        'حب': 'عشق',
+        'مودة': 'محبت',
+        'سعيد': 'خوشحال',
+        'حزين': 'ناراحت',
+        'تعبان': 'خسته',
+        'نوم': 'خواب',
+        'مريح': 'راحت',
+        'سريع': 'سریع',
+        'بطيء': 'آهسته',
+        'كبير': 'بزرگ',
+        'صغير': 'کوچک',
+        'طويل': 'بلند',
+        'قصير': 'کوتاه',
+        'جميل': 'زیبا',
+        'قبيح': 'زشت',
+        'جديد': 'جدید',
+        'قديم': 'قدیمی',
+        'صعب': 'سخت',
+        'سهل': 'آسان',
+        'بارد': 'سرد',
+        'حار': 'گرم',
+        'خفيف': 'سبک',
+        'ثقيل': 'سنگین',
+        'نظيف': 'پاک',
+        'وسخ': 'کثیف',
+        'غني': 'ثروتمند',
+        'فقير': 'فقیر',
+        'حر': 'آزاد',
+        'مجبر': 'مجبور',
+        'مهم': 'مهم',
+        'غير مهم': 'بی‌اهمیت',
+        'أول': 'اول',
+        'آخر': 'آخر',
+        'دائماً': 'همیشه',
+        'أبداً': 'هرگز',
+        'أحياناً': 'گاهی',
+        'أغلب': 'اکثر',
+        'قليل': 'کم',
+        'كثير': 'زیاد',
+        'كل': 'همه',
+        'لا شيء': 'هیچ',
+        'بعض': 'بعضی',
+        'مشهور': 'مشهور',
+        'مجهول': 'ناشناس',
+        'أنت': 'شما',
+        'أنا': 'من',
+        'هو': 'او',
+        'نحن': 'ما',
+        'هم': 'آنها',
+        'هذا': 'این',
+        'ذلك': 'آن',
+        'هنا': 'اینجا',
+        'هناك': 'آنجا',
+        'لماذا': 'چرا',
+        'متى': 'کی',
+        'أين': 'کجا',
+        'كيف': 'چگونه',
+        'ماذا': 'چه',
+        'كم': 'چند',
+        'أي': 'کدام',
+        'من': 'چه کسی',
+        'أذهب': 'می‌روم',
+        'أجيء': 'می‌آیم',
+        'أريد': 'می‌خواهم',
+        'أقول': 'می‌گویم',
+        'أفعل': 'می‌کنم',
+        'آكل': 'می‌خورم',
+        'أكتب': 'می‌نویسم',
+        'أقرأ': 'می‌خوانم',
+        'أفهم': 'می‌فهمم',
+        'أعرف': 'می‌دانم',
+        'أرى': 'می‌بینم',
+        'أسمع': 'می‌شنوم',
+        'أنام': 'می‌خوابم',
+        'أشتري': 'می‌خرم',
+        'أبيع': 'می‌فروشم',
+        'أعمل': 'کار می‌کنم',
+        'أحاول': 'تلاش می‌کنم',
+        'أفكر': 'فکر می‌کنم',
+        'أنتظر': 'انتظار می‌کشم',
+        'بنيت': 'ساختم',
+        'قلت': 'گفتم',
+        'ذهبت': 'رفتم',
+        'جئت': 'آمدم',
+        'تذهب': 'می‌روی',
+        'تجيء': 'می‌آیی',
+        'تريد': 'می‌خواهی',
+        'تقول': 'می‌گویی',
+        'تفعل': 'می‌کنی',
+        'تأكل': 'می‌خوری',
+        'تكتب': 'می‌نویسی',
+        'تقرأ': 'می‌خوانی',
+        'تفهم': 'می‌فهمی',
+        'تعرف': 'می‌دانی',
+        'ترى': 'می‌بینی',
+        'تسمع': 'می‌شنوی',
+        'تنام': 'می‌خوابی',
+        'تشتري': 'می‌خری',
+        'تبيع': 'می‌فروشی',
+        'تعمل': 'کار می‌کنی',
+        'تحاول': 'تلاش می‌کنی',
+        'تفكر': 'فکر می‌کنی',
+        'تنتظر': 'انتظار می‌کشی',
+        'اذهب': 'برو',
+        'تعال': 'بیا',
+        'خذ': 'بگیر',
+        'أعطِ': 'بده',
+        'افعل': 'بکن',
+        'اقرأ': 'بخوان',
+        'اسمع': 'بشنو',
+        'انظر': 'ببین',
+        'اعمل': 'کار کن',
+        'اصبر': 'صبر کن',
+        'ساعد': 'کمک کن',
+        'تعال إلى هنا': 'بیا اینجا',
+        'اذهب إلى هناك': 'برو آنجا',
+        'أدفع': 'پرداخت می‌کنم',
+        'أتلقى': 'دریافت می‌کنم',
+        'أحسب': 'محاسبه می‌کنم',
+        'أتحقق': 'کنترل می‌کنم',
+        'أركب': 'نصب می‌کنم',
+        'أصلح': 'تعمیر می‌کنم',
+        'أضبط': 'تنظیم می‌کنم',
+        'أختبر': 'تست می‌کنم',
+        'يسلم': 'سلام کردن',
+        'يودع': 'خداحافظی کردن',
+        'يسأل': 'سوال کردن',
+        'يجيب': 'جواب دادن',
+        'يشكر': 'تشکر کردن',
+        'يعتذر': 'معذرت خواستن',
+        'يستفسر': 'پرسیدن',
+        'يقول': 'گفتن',
+        'يسمع': 'شنیدن',
+        'يرى': 'دیدن',
+        'يشتري': 'خریدن',
+        'يبيع': 'فروختن',
+        'ياكل': 'خوردن',
+        'يشرب': 'نوشیدن',
+        'ينام': 'خوابیدن',
+        'يستيقظ': 'بیدار شدن',
+        'يمشي': 'راه رفتن',
+        'يجلس': 'نشستن',
+        'يقف': 'ایستادن',
+        'يجلب': 'آوردن',
+        'يأخذ': 'بردن',
+        'كيف حالك؟': 'چطوری؟',
+        'بخير': 'خوبم',
+        'لست بخير': 'بد نیستم',
+        'عفواً': 'خواهش می‌کنم',
+        'أفهمك': 'می‌فهممت',
+        'لا أفهم': 'نمی‌فهمم',
+        'أحتاج مساعدة': 'کمک می‌خواهم',
+        'أحتاج': 'نیاز دارم',
+        'أستطيع': 'می‌توانم',
+        'لا أستطيع': 'نمی‌توانم',
+        'مستعجل': 'عجله دارم',
+        'هيا بنا نذهب': 'بیا برویم',
+        'أين هو؟': 'کجاست؟',
+        'ما هذا؟': 'این چیست؟',
+        'بكم؟': 'چقدر؟',
+        'بالتأكيد': 'حتماً',
+        'الآن': 'الان',
+        'لاحقاً': 'بعداً',
+        'معي': 'با من',
+        'معك': 'با تو',
+        'لي': 'برای من',
+        'لك': 'برای تو',
+        'مني': 'از من',
+        'منك': 'از تو',
+        'في': 'در من',
+        'فيك': 'در تو',
+        'علي': 'به من',
+        'عليك': 'به تو',
+        'من هذا': 'از این',
+        'من ذلك': 'از آن',
+        'مع هذا': 'با این',
+        'مع ذلك': 'با آن',
+        'لهذا': 'برای این',
+        'لذلك': 'برای آن'
+    };
+
+    // =================== توابع کمکی ===================
+
+    // بررسی وضعیت اینترنت
+    async function checkInternetConnection() {
+        try {
+            // استفاده از یک درخواست ساده برای بررسی اتصال
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch('https://jsonplaceholder.typicode.com/posts/1', {
+                method: 'HEAD',
+                mode: 'no-cors',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            isOnline = true;
+            updateConnectionStatus('آنلاین - استفاده از ترجمه پیشرفته', 'online');
+            return true;
+        } catch (error) {
+            isOnline = false;
+            updateConnectionStatus('آفلاین - استفاده از دیکشنری محدود', 'offline');
+            return false;
+        }
+    }
+
+    // به‌روزرسانی وضعیت اتصال
+    function updateConnectionStatus(message, statusClass) {
+        connectionStatus.style.display = 'block';
+        connectionStatus.className = `connection-status ${statusClass}`;
+        statusText.textContent = message;
+        translationMode.textContent = statusClass === 'online' ? 'پیشرفته (آنلاین)' : 'محدود (آفلاین)';
+        footerText.textContent = statusClass === 'online' 
+            ? 'از API ترجمه آنلاین استفاده می‌کند • ساخته شده با ❤️'
+            : 'در حالت آفلاین • از دیکشنری داخلی استفاده می‌کند';
+    }
+
+    // به‌روزرسانی نمایش زبان‌ها
+    function updateLangDisplay() {
+        sourceLangElem.textContent = currentSourceLang === 'fa' ? 'فارسی' : 'عربی';
+        targetLangElem.textContent = currentTargetLang === 'fa' ? 'فارسی' : 'عربی';
+    }
+
+    // =================== توابع ترجمه ===================
+
+    // ترجمه آنلاین با استفاده از API رایگان
+    async function translateOnline(text, sourceLang, targetLang) {
+        try {
+            // استفاده از API MyMemory (رایگان)
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${sourceLang}|${targetLang}`;
+            
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                throw new Error(`خطای شبکه: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+                return data.responseData.translatedText;
+            } else {
+                throw new Error('پاسخ نامعتبر از سرور');
+            }
+        } catch (error) {
+            console.error('خطا در ترجمه آنلاین:', error);
+            return null;
+        }
+    }
+
+    // ترجمه آفلاین
+    function translateOffline(text, sourceLang, targetLang) {
+        if (!text.trim()) return '';
+        
+        const sentences = text.split(/[.!?،؛]+/).filter(s => s.trim());
+        let translatedResult = '';
+        
+        for (let sentence of sentences) {
+            const words = sentence.trim().split(/\s+/);
+            const translatedWords = [];
+            let translatedCount = 0;
+            
+            for (let word of words) {
+                // حفظ علائم نگارشی
+                const punctuation = word.match(/[.,!?;:،؛]$/);
+                const cleanWord = punctuation ? word.slice(0, -1) : word;
+                const punct = punctuation ? punctuation[0] : '';
+                
+                let translatedWord = word; // پیش‌فرض: همان کلمه
+                
+                if (sourceLang === 'fa' && targetLang === 'ar') {
+                    // فارسی به عربی
+                    if (offlineDictionary[cleanWord]) {
+                        translatedWord = offlineDictionary[cleanWord] + punct;
+                        translatedCount++;
+                    }
+                } else if (sourceLang === 'ar' && targetLang === 'fa') {
+                    // عربی به فارسی
+                    if (offlineDictionary[cleanWord]) {
+                        translatedWord = offlineDictionary[cleanWord] + punct;
+                        translatedCount++;
+                    }
+                }
+                
+                translatedWords.push(translatedWord);
+            }
+            
+            // اگر کمتر از ۵۰٪ کلمات ترجمه شد، پیام هشدار بده
+            const translationRatio = translatedCount / words.length;
+            let translatedSentence = translatedWords.join(' ');
+            
+            if (translationRatio < 0.3 && words.length > 3) {
+                translatedSentence += ' [کلمه ناشناخته]';
+            }
+            
+            translatedResult += translatedSentence + '. ';
+        }
+        
+        if (translatedResult.trim() === text.trim()) {
+            return 'متن وارد شده قابل ترجمه نیست. لطفاً متن دیگری وارد کنید.';
+        }
+        
+        return translatedResult.trim();
+    }
+
+    // تابع اصلی ترجمه
+    async function translateText() {
+        if (isTranslating) return;
+        
+        const text = sourceText.value.trim();
+        
+        if (!text) {
+            alert('لطفاً متنی برای ترجمه وارد کنید.');
+            return;
+        }
+        
+        if (text.length > 1000) {
+            alert('متن وارد شده بسیار طولانی است. لطفاً متن کوتاه‌تری وارد کنید.');
+            return;
+        }
+        
+        isTranslating = true;
+        translatedText.value = 'در حال ترجمه...';
+        
+        try {
+            let result;
+            
+            if (isOnline) {
+                // ابتدا سعی کن آنلاین ترجمه کنی
+                result = await translateOnline(text, currentSourceLang, currentTargetLang);
+                
+                if (!result || result === text) {
+                    // اگر آنلاین جواب نداد، از آفلاین استفاده کن
+                    result = translateOffline(text, currentSourceLang, currentTargetLang);
+                }
+            } else {
+                // حالت آفلاین
+                result = translateOffline(text, currentSourceLang, currentTargetLang);
+            }
+            
+            translatedText.value = result || 'خطا در ترجمه. لطفاً دوباره تلاش کنید.';
+        } catch (error) {
+            console.error('خطا در ترجمه:', error);
+            translatedText.value = 'خطا در ترجمه. لطفاً دوباره تلاش کنید.';
+        } finally {
+            isTranslating = false;
+        }
+    }
+
+    // =================== توابع صوتی ===================
+
+    // خواندن متن ترجمه شده با Web Speech API
+    function speakTranslatedText() {
+        const text = translatedText.value.trim();
+        
+        if (!text || text === 'در حال ترجمه...' || text.startsWith('خطا')) {
+            alert('لطفاً ابتدا ترجمه را انجام دهید.');
+            return;
+        }
+        
+        // بررسی پشتیبانی از Web Speech API
+        if (!('speechSynthesis' in window)) {
+            alert('مرورگر شما از قابلیت خواندن متن پشتیبانی نمی‌کند.');
+            return;
+        }
+        
+        try {
+            // توقف هر پخش قبلی
+            window.speechSynthesis.cancel();
+            
+            // ایجاد utterance جدید
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // تنظیم زبان
+            utterance.lang = currentTargetLang === 'fa' ? 'fa-IR' : 'ar-SA';
+            
+            // تنظیم سرعت و بلندی
+            utterance.rate = speechRate;
+            utterance.volume = speechVolume;
+            
+            // انتخاب صدا
+            const voices = window.speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                // جستجوی صدای مناسب
+                const targetVoices = voices.filter(voice => 
+                    voice.lang.startsWith(currentTargetLang === 'fa' ? 'fa' : 'ar')
+                );
+                
+                if (targetVoices.length > 0) {
+                    utterance.voice = targetVoices[0];
+                } else {
+                    // اگر صدا یافت نشد، از اولین صدا استفاده کن
+                    utterance.voice = voices[0];
+                }
+            }
+            
+            // رویدادهای utterance
+            utterance.onstart = function() {
+                isPlaying = true;
+                updatePlayButtons(true);
+            };
+            
+            utterance.onend = function() {
+                isPlaying = false;
+                updatePlayButtons(false);
+            };
+            
+            utterance.onerror = function(event) {
+                console.error('خطا در پخش صدا:', event);
+                alert('خطا در پخش صدا. لطفاً دوباره تلاش کنید.');
+                isPlaying = false;
+                updatePlayButtons(false);
+            };
+            
+            // شروع پخش
+            window.speechSynthesis.speak(utterance);
+            currentAudio = utterance;
+            
+        } catch (error) {
+            console.error('خطا در تولید صدا:', error);
+            alert('خطا در تولید صدا. لطفاً دوباره تلاش کنید.');
+            isPlaying = false;
+            updatePlayButtons(false);
+        }
+    }
+
+    // توقف پخش
+    function stopAudioPlayback() {
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        
+        isPlaying = false;
+        updatePlayButtons(false);
+    }
+
+    // مکث/ادامه پخش
+    function toggleAudioPlayback() {
+        if (!window.speechSynthesis) return;
+        
+        if (window.speechSynthesis.speaking) {
+            if (window.speechSynthesis.paused) {
+                window.speechSynthesis.resume();
+            } else {
+                window.speechSynthesis.pause();
+            }
+        }
+    }
+
+    // به‌روزرسانی وضعیت دکمه‌های پخش
+    function updatePlayButtons(playing) {
+        if (playing) {
+            playTranslatedBtn.disabled = true;
+            playTranslatedBtn.classList.add('playing');
+            pauseTranslatedBtn.disabled = false;
+            pauseTranslatedBtn.style.display = 'flex';
+            stopTranslatedBtn.disabled = false;
+            stopTranslatedBtn.style.display = 'flex';
+        } else {
+            playTranslatedBtn.disabled = false;
+            playTranslatedBtn.classList.remove('playing');
+            pauseTranslatedBtn.disabled = true;
+            pauseTranslatedBtn.style.display = 'none';
+            stopTranslatedBtn.disabled = true;
+            stopTranslatedBtn.style.display = 'none';
+        }
+    }
+
+    // =================== رویدادها ===================
+
+    function setupEventListeners() {
+        // تبدیل به عربی
+        toArabicBtn.addEventListener('click', function() {
+            currentSourceLang = 'fa';
+            currentTargetLang = 'ar';
+            updateLangDisplay();
+            translateText();
+        });
+        
+        // تبدیل به فارسی
+        toPersianBtn.addEventListener('click', function() {
+            currentSourceLang = 'ar';
+            currentTargetLang = 'fa';
+            updateLangDisplay();
+            translateText();
+        });
+        
+        // تبدیل دوطرفه
+        swapLangsBtn.addEventListener('click', function() {
+            // جابجایی زبان‌ها
+            [currentSourceLang, currentTargetLang] = [currentTargetLang, currentSourceLang];
+            
+            // جابجایی متن‌ها
+            const tempText = sourceText.value;
+            const currentTranslation = translatedText.value;
+            
+            sourceText.value = currentTranslation === 'در حال ترجمه...' ? '' : currentTranslation;
+            translatedText.value = tempText;
+            
+            updateLangDisplay();
+            charCount.textContent = sourceText.value.length;
+        });
+        
+        // کپی
+        copyBtn.addEventListener('click', function() {
+            if (!translatedText.value.trim() || translatedText.value === 'در حال ترجمه...') {
+                alert('متن ترجمه‌شده‌ای برای کپی وجود ندارد.');
+                return;
+            }
+            
+            translatedText.select();
+            translatedText.setSelectionRange(0, 99999);
+            
+            try {
+                navigator.clipboard.writeText(translatedText.value);
+                
+                // نمایش تأیید موقت
+                const originalText = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> کپی شد!';
+                copyBtn.style.backgroundColor = '#2ecc71';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalText;
+                    copyBtn.style.backgroundColor = '';
+                }, 2000);
+            } catch (err) {
+                console.error('خطا در کپی:', err);
+                alert('خطا در کپی کردن متن.');
+            }
+        });
+        
+        // پاک‌سازی
+        clearBtn.addEventListener('click', function() {
+            sourceText.value = '';
+            translatedText.value = '';
+            charCount.textContent = '0';
+            stopAudioPlayback();
+        });
+        
+        // شمارش کاراکتر
+        sourceText.addEventListener('input', function() {
+            const count = sourceText.value.length;
+            charCount.textContent = count;
+            
+            // تغییر رنگ اگر به حد مجاز نزدیک شد
+            if (count > 900) {
+                charCount.style.color = '#e74c3c';
+                charCount.style.fontWeight = 'bold';
+            } else if (count > 700) {
+                charCount.style.color = '#f39c12';
+                charCount.style.fontWeight = 'bold';
+            } else {
+                charCount.style.color = '#7f8c8d';
+                charCount.style.fontWeight = 'normal';
+            }
+        });
+        
+        // ترجمه با Ctrl+Enter
+        sourceText.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                translateText();
+            }
+        });
+        
+        // =================== رویدادهای صوتی ===================
+        
+        // خواندن متن ترجمه شده
+        playTranslatedBtn.addEventListener('click', function() {
+            speakTranslatedText();
+        });
+        
+        // مکث/ادامه پخش
+        pauseTranslatedBtn.addEventListener('click', function() {
+            toggleAudioPlayback();
+        });
+        
+        // توقف پخش
+        stopTranslatedBtn.addEventListener('click', function() {
+            stopAudioPlayback();
+        });
+        
+        // =================== تنظیمات صدا ===================
+        
+        // انتخاب صدای زن/مرد
+        voiceOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // حذف انتخاب قبلی
+                voiceOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // انتخاب جدید
+                this.classList.add('selected');
+                selectedVoice = this.getAttribute('data-voice');
+                
+                // اگر در حال پخش هست، با صدای جدید ادامه بده
+                if (isPlaying) {
+                    stopAudioPlayback();
+                    setTimeout(() => speakTranslatedText(), 300);
+                }
+            });
+        });
+        
+        // کنترل سرعت
+        rateControl.addEventListener('input', function() {
+            speechRate = parseFloat(this.value);
+            rateValue.textContent = speechRate.toFixed(1);
+        });
+        
+        // کنترل بلندی
+        volumeControl.addEventListener('input', function() {
+            speechVolume = parseFloat(this.value);
+            volumeValue.textContent = speechVolume.toFixed(1);
+        });
+        
+        // بررسی وضعیت اینترنت هر 30 ثانیه
+        setInterval(checkInternetConnection, 30000);
+    }
+
+    // =================== مقداردهی اولیه ===================
+
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('صفحه بارگذاری شد');
+        
+        // پیدا کردن المنت‌های اصلی
+        sourceText = document.getElementById('sourceText');
+        translatedText = document.getElementById('translatedText');
+        toArabicBtn = document.getElementById('toArabic');
+        toPersianBtn = document.getElementById('toPersian');
+        swapLangsBtn = document.getElementById('swapLangs');
+        copyBtn = document.getElementById('copyBtn');
+        clearBtn = document.getElementById('clearBtn');
+        charCount = document.getElementById('charCount');
+        sourceLangElem = document.getElementById('sourceLang');
+        targetLangElem = document.getElementById('targetLang');
+        connectionStatus = document.getElementById('connectionStatus');
+        statusText = document.getElementById('statusText');
+        translationMode = document.getElementById('translationMode');
+        footerText = document.getElementById('footerText');
+        
+        // پیدا کردن المنت‌های صوتی
+        playTranslatedBtn = document.getElementById('playTranslated');
+        pauseTranslatedBtn = document.getElementById('pauseTranslated');
+        stopTranslatedBtn = document.getElementById('stopTranslated');
+        rateControl = document.getElementById('rateControl');
+        volumeControl = document.getElementById('volumeControl');
+        rateValue = document.getElementById('rateValue');
+        volumeValue = document.getElementById('volumeValue');
+        voiceOptions = document.querySelectorAll('.voice-option');
+        translatedAudio = document.getElementById('translatedAudio');
+        translatedAudioPlayer = document.getElementById('translatedAudioPlayer');
+        
+        // تنظیم رویدادها
+        setupEventListeners();
+        
+        // به‌روزرسانی اولیه نمایش
+        updateLangDisplay();
+        
+        // مخفی کردن دکمه‌های مکث و توقف در ابتدا
+        pauseTranslatedBtn.style.display = 'none';
+        stopTranslatedBtn.style.display = 'none';
+        
+        // مخفی کردن پلیر در ابتدا
+        translatedAudioPlayer.style.display = 'none';
+        
+        // بارگذاری صداهای Web Speech API
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = function() {
+                console.log('صداهای در دسترس:', window.speechSynthesis.getVoices().length);
+            };
+        }
+        
+        // بررسی وضعیت اینترنت
+        await checkInternetConnection();
+        
+        console.log('مترجم فارسی-عربی آماده است!');
+        console.log('حالت فعلی:', isOnline ? 'آنلاین' : 'آفلاین');
+        console.log('قابلیت صوتی برای متن ترجمه شده فعال است');
+    });
+
+    // مدیریت رویداد unload
+    window.addEventListener('beforeunload', function() {
+        if (window.speechSynthesis && window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+        }
+    });
+    </script>
+</body>
+</html>

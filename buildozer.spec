@@ -1,7 +1,7 @@
 [app]
-title = My Simple App
-package.name = mysimpleapp
-package.domain = org.example
+title = برنامه ساده
+package.name = myapp
+package.domain = org.test
 version = 1.0.0
 
 requirements = python3,kivy
